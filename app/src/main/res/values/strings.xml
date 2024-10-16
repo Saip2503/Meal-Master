@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">RecipeSuggester</string>
+    <string name="eisbc">Enter ingredients separated by commas</string>
+    <string name="sr">Suggest Recipes</string>
+    <string name="meal_master">Meal Master</string>
+    <string name="meal_master1">Meal Master</string>
+</resources>
