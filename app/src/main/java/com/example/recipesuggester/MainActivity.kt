@@ -9,6 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.recipesuggester.adapter.RecipeAdapter
 import com.example.recipesuggester.model.Recipe
 import android.widget.Toast
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,41 +18,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var suggestButton: Button
     private lateinit var recipeList: RecyclerView
     private lateinit var recipeAdapter: RecipeAdapter
-
-    // A sample list of recipes for local testing.
-    private val recipes = listOf(
-        Recipe("Pasta", listOf("pasta", "tomato", "cheese", "olive oil")),
-        Recipe("Salad", listOf("lettuce", "tomato", "cucumber", "olive oil", "lemon")),
-        Recipe("Omelette", listOf("egg", "cheese", "onion", "butter")),
-        Recipe("Grilled Cheese Sandwich", listOf("bread", "cheese", "butter")),
-        Recipe("Tacos", listOf("tortilla", "tomato", "lettuce", "cheese", "beef")),
-        Recipe("Pizza", listOf("dough", "tomato", "cheese", "olive oil", "basil")),
-        Recipe("Fried Rice", listOf("rice", "egg", "carrot", "soy sauce", "onion")),
-        Recipe("Chicken Stir-fry", listOf("chicken", "soy sauce", "garlic", "bell pepper", "onion")),
-        Recipe("Pancakes", listOf("flour", "egg", "milk", "butter", "sugar")),
-        Recipe("Guacamole", listOf("avocado", "tomato", "onion", "lime", "cilantro")),
-        Recipe("Spaghetti Bolognese", listOf("spaghetti", "ground beef", "tomato", "onion", "garlic")),
-        Recipe("Caesar Salad", listOf("lettuce", "croutons", "parmesan", "caesar dressing", "chicken")),
-        Recipe("Mac and Cheese", listOf("macaroni", "cheese", "milk", "butter")),
-        Recipe("Vegetable Soup", listOf("carrot", "celery", "onion", "potato", "tomato")),
-        Recipe("Chili", listOf("ground beef", "tomato", "beans", "onion", "garlic", "chili powder")),
-        Recipe("Beef Stew", listOf("beef", "carrot", "potato", "onion", "beef broth")),
-        Recipe("Scrambled Eggs", listOf("egg", "butter", "salt", "pepper")),
-        Recipe("French Toast", listOf("bread", "egg", "milk", "sugar", "butter")),
-        Recipe("Chocolate Cake", listOf("flour", "cocoa powder", "sugar", "egg", "butter")),
-        Recipe("Hamburger", listOf("ground beef", "bun", "lettuce", "tomato", "cheese")),
-        Recipe("Quiche", listOf("egg", "cheese", "onion", "milk", "pastry")),
-        Recipe("Sushi", listOf("rice", "seaweed", "fish", "soy sauce", "avocado")),
-        Recipe("Chicken Curry", listOf("chicken", "onion", "garlic", "curry powder", "coconut milk")),
-        Recipe("Lasagna", listOf("lasagna noodles", "tomato", "cheese", "ground beef", "onion")),
-        Recipe("Garlic Bread", listOf("bread", "garlic", "butter", "parsley")),
-        Recipe("Falafel", listOf("chickpeas", "onion", "garlic", "parsley", "cumin")),
-        Recipe("Hummus", listOf("chickpeas", "tahini", "garlic", "lemon", "olive oil")),
-        Recipe("Caprese Salad", listOf("tomato", "mozzarella", "basil", "olive oil", "balsamic vinegar")),
-        Recipe("Meatballs", listOf("ground beef", "breadcrumbs", "egg", "onion", "garlic")),
-        Recipe("Clam Chowder", listOf("clams", "potato", "celery", "onion", "cream"))
-    )
-
+    private lateinit var recipes: List<Recipe>  // List to store recipes from the CSV
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +31,9 @@ class MainActivity : AppCompatActivity() {
         recipeList.layoutManager = LinearLayoutManager(this)
         recipeAdapter = RecipeAdapter(listOf())  // Initially, no recipes are suggested
         recipeList.adapter = recipeAdapter
+
+        // Load recipes from CSV
+        recipes = loadRecipesFromCSV()
 
         // Method to filter recipes based on user input
         fun getSuggestedRecipes(ingredients: String): List<Recipe> {
@@ -86,8 +57,27 @@ class MainActivity : AppCompatActivity() {
                 recipeAdapter.updateRecipes(suggestedRecipes)
             }
         }
-
-
-
     }
+
+    // Function to read and parse the CSV file
+    private fun loadRecipesFromCSV(): List<Recipe> {
+        val recipeList = mutableListOf<Recipe>()
+        val inputStream = assets.open("recipes.csv")
+        val reader = BufferedReader(InputStreamReader(inputStream))
+        reader.readLine() // Skip the header row
+
+        reader.forEachLine { line ->
+            // Using a regex to split by commas but ignore commas inside quotes
+            val parts = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)".toRegex())
+            if (parts.size == 2) {
+                val recipeName = parts[0].trim()
+                val ingredients = parts[1].removeSurrounding("\"").split(",").map { it.trim() }  // Removing quotes and splitting ingredients
+                recipeList.add(Recipe(recipeName, ingredients))
+            }
+        }
+
+        reader.close()
+        return recipeList
+    }
+
 }

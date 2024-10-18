@@ -12,21 +12,24 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
         tools:targetApi="31">
+
+        <!-- LoginActivity as the launch activity -->
         <activity
             android:name=".LoginActivity"
-            android:exported="false" />
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
+            android:exported="true"> <!-- Ensure 'true' for launch activity -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
+        <!-- MainActivity for recipe suggestions -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/meal_master1"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
-
         </activity>
-    </application>
 
+    </application>
 </manifest>

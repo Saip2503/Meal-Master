@@ -4,4 +4,7 @@
     <string name="sr">Suggest Recipes</string>
     <string name="meal_master">Meal Master</string>
     <string name="meal_master1">Meal Master</string>
+    <string name="enter_username">Enter Username</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="login">Login</string>
 </resources>
